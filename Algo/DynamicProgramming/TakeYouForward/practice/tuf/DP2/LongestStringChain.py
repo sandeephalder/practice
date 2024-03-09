@@ -1,0 +1,65 @@
+from typing import List 
+from collections import Counter
+words =  ["a","b","ba","bca","bda","bdca"]
+
+
+class Solution:
+    def longestStrChain(self, words: List[str]) -> int:
+        words = sorted(words,key= lambda x:(len(x),x))
+        print(words)
+        N=len(words)
+        max=1
+        dp=[1 for _ in range(len(words))]
+        for i in range(N):
+            for j in range(i):
+                if self.findIntersection(words[i],words[j]) and dp[j]+1 > dp[i]:
+                    dp[i] = dp[j]+1
+        
+                if dp[i] > max:
+                    max = dp[i]
+
+        return max
+    
+
+    def longestStrChainCalculate(self, words: List[str], dp: List[List[str]], chain: List[str],index: int,preindex: int) -> int:
+        if index>=len(words):
+            print('Result :' ,chain)
+            return len(set(chain))
+        take = 0
+        #if preindex!= None and dp[index][preindex]!=-1:
+        #    return dp[index][preindex]
+        if preindex==None or (self.findIntersection(words[index],words[preindex]) and len(words[index]) > len(words[preindex])):
+            if preindex==None:
+                preindex=index
+            chain.append(words[index])
+            take = self.longestStrChainCalculate(words,dp,chain,index+1,index)
+            chain = chain[:-1]
+        nontake = self.longestStrChainCalculate(words,dp,chain,index+1,preindex)
+        dp[index][preindex]=max(take,nontake)
+        return dp[index][preindex]
+
+
+    def findIntersection(self, s1: List[str],s2: List[str]) -> bool:
+        # Check if s2 is a predecessor of s1
+        if len(s1) != len(s2) + 1:
+            return False
+
+        first = 0
+        second = 0
+        if len(s2)==len(s1):
+            print('===',s1,s2)
+            return False
+
+        while first < len(s1):
+            if second < len(s2) and s1[first] == s2[second]:
+                first += 1
+                second += 1
+            else:
+                first += 1
+
+        return first == len(s1) and second == len(s2)
+sol  = Solution()
+
+print(sol.longestStrChain(words))
+
+print('Soln : ',sol.findIntersection('a','ba'))
