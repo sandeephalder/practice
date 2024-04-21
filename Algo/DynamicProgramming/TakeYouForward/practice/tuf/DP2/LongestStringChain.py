@@ -1,6 +1,6 @@
 from typing import List 
 from collections import Counter
-words =  ["a","b","ba","bca","bda","bdca"]
+words =  ["xbc","pcxbcf","xb","cxbc","pcxbc"]
 
 
 class Solution:
@@ -9,8 +9,8 @@ class Solution:
         print(words)
         N=len(words)
         max=1
-        dp=[1 for _ in range(len(words))]
-        for i in range(N):
+        dp= [[-1 for _ in range(len(words)+1)] for _ in range(len(words))]
+        '''for i in range(N):
             for j in range(i):
                 if self.findIntersection(words[i],words[j]) and dp[j]+1 > dp[i]:
                     dp[i] = dp[j]+1
@@ -18,25 +18,28 @@ class Solution:
                 if dp[i] > max:
                     max = dp[i]
 
-        return max
+        return max'''
+        chain =[]
+        ans = self.longestStrChainCalculate(words,dp,chain,0,-1)
+        return ans
     
 
     def longestStrChainCalculate(self, words: List[str], dp: List[List[str]], chain: List[str],index: int,preindex: int) -> int:
         if index>=len(words):
-            print('Result :' ,chain)
-            return len(set(chain))
+            return 0
         take = 0
-        #if preindex!= None and dp[index][preindex]!=-1:
-        #    return dp[index][preindex]
-        if preindex==None or (self.findIntersection(words[index],words[preindex]) and len(words[index]) > len(words[preindex])):
-            if preindex==None:
-                preindex=index
+        if dp[index][preindex+1]!=-1:
+            return dp[index][preindex+1]
+        
+        if  preindex==-1 or self.findIntersection(words[index],words[preindex]):
+    
             chain.append(words[index])
-            take = self.longestStrChainCalculate(words,dp,chain,index+1,index)
+            take = 1+self.longestStrChainCalculate(words,dp,chain,index+1,index)
             chain = chain[:-1]
-        nontake = self.longestStrChainCalculate(words,dp,chain,index+1,preindex)
-        dp[index][preindex]=max(take,nontake)
-        return dp[index][preindex]
+        nontake = self.longestStrChainCalculate(words,dp,chain,index+1,preindex) 
+        
+        dp[index][preindex+1]=max(take,nontake)
+        return dp[index][preindex+1]
 
 
     def findIntersection(self, s1: List[str],s2: List[str]) -> bool:
@@ -47,7 +50,7 @@ class Solution:
         first = 0
         second = 0
         if len(s2)==len(s1):
-            print('===',s1,s2)
+            #print('===',s1,s2)
             return False
 
         while first < len(s1):
@@ -58,8 +61,10 @@ class Solution:
                 first += 1
 
         return first == len(s1) and second == len(s2)
+    
+    
 sol  = Solution()
 
-print(sol.longestStrChain(words))
+print(' Final Result : ',sol.longestStrChain(words))
 
-print('Soln : ',sol.findIntersection('a','ba'))
+#print('Soln : ',sol.findIntersection('a','ba'))
